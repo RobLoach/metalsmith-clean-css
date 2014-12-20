@@ -61,5 +61,20 @@ describe('metalsmith-clean-css', function() {
     });
   });
 
+  it('should correctly generate source maps files', function(done) {
+    var files = {
+      'foo/bar/main.css': { contents: ' * { display: none; } '}
+    };
+
+    cleanCSS({ cleanCSS: { sourceMap: true } })(files, null, function() {
+      expect(files['foo/bar/main.css'].contents).to.match(/\/\*#.+\*\/$/);
+      expect(function() {
+        var json = JSON.parse(files['foo/bar/main.css.map'].contents);
+        expect(json.sources).to.deep.equal(['main.css']);
+        done();
+      }).to.not.throw();
+    });
+  });
+
 
 });
